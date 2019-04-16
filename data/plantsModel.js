@@ -6,6 +6,7 @@ module.exports = {
   addPlant,
   findById,
   deletePlantById,
+  updatePlant,
 };
 
 function find() {
@@ -31,4 +32,9 @@ function deletePlantById(id) {
   return db('plants')
     .where({ id })
     .delete();
+}
+function updatePlant(id, changes){
+  db('users')
+  .where({id})
+  .update(changes)
 }
