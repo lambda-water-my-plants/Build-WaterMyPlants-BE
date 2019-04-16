@@ -32,15 +32,6 @@ router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req,
     }
 });
 
-router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
-    try{
-        const plant = await plantDb.deletePlantById(req.params.id);
-        res.status(200).json({message: `This ${plant} has deleted `} );
-    }catch (err){
-        res.status(500).json({ error: `there was an error: ${err}` });
-    }
-});
-
 router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
         const changes = req.body;
