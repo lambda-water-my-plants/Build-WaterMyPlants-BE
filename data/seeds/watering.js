@@ -1,7 +1,7 @@
 exports.seed = async function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('watering')
-    .truncate()
+    .del()
     .then(function() {
       // Inserts seed entries
       return knex('watering').insert([
