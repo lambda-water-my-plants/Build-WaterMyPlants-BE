@@ -80,7 +80,7 @@
 ---
 ### GET /api/users/{userId}/plants
 **JWT token required**
-* Returns a list of all user's plants (json objects) and scheduled watering times. Only accessible by plant owner.
+* Returns a list of all plants of a user(json objects) and scheduled watering times. Only accessible by plant owner.
 * Return example:
 ```
 [
