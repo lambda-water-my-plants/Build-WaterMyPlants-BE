@@ -52,25 +52,28 @@ router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
 // expects an array of times
 // returns the updated schedule
 router.post('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
-    try {
+    try {    
         const { id } = req.params;
-        const times = [...req.body.times];
+        //const times = [...req.body.times];
+        const times = [5, 4];
         for (let i = 0; i < times.length; i++) {
-          const wateringId = await plants.addWatering(id, times[i]);
+          const wateringId = await plantDb.addWatering(id, times[i]);
+          console.log(id)
           const [notification] = await notifications.addNotification(wateringId);
           notifier(notification);
+          console.log('notification',notification)
         }
-        const schedule = await plants.getWateringSchedule(id);
-        res.status(200).json(schedule);
+        const schedule = await plantDb.getWateringSchedule(id);
+        res.status(200).json({post: schedule});
     } catch (err) {
         res.status(500).json(err);
     }
     
 });
 // Get a plant's watering schedule
-router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+router.get('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try {
-            const schedule = await plants.getWateringById(req.params.id);
+            const schedule = await plantDb.getWateringSchedule(req.params.id);
             if (schedule.length) {
               res.status(200).json(schedule);
               console.log(schedule);
@@ -86,7 +89,7 @@ router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
 // deletes plant's entire watering schedule
 router.delete('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
-        const response = await plants.deleteWateringById(req.params.id);
+        const response = await plantDb.deleteWateringById(req.params.id);
         console.log(response);
         res.status(200).json({ message: 'the schedule is deleted' });
     } catch (err) {
@@ -95,11 +98,11 @@ router.delete('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, a
 });
 // delete a specific watering time
 // returns the modified watering schedule
-router.delete('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+router.delete('/:id/schedule/:waterId', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try {
-        const count = await plants.deleteWateringTime(req.params.waterId);
+        const count = await plantDb.deleteWateringTime(req.params.waterId);
         if (count) {
-          const schedule = await plants.getWateringSchedule(req.params.id);
+          const schedule = await plantDb.getWateringSchedule(req.params.id);
           res.status(200).json(schedule);
         }
       } catch (err) {

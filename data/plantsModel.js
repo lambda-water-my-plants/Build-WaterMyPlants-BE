@@ -55,9 +55,9 @@ async function addWatering(plant_id, watering){
 }
 
 function getWateringSchedule(plant_id) {
-  return db('watering').select('id', 'watering_time')
+  return db('watering')
   .where({ plant_id })
-  .first();
+  .select('id', 'watering_time')
 }
 function deleteWateringbyId(plant_id) {
   return db('watering')
