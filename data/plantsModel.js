@@ -16,14 +16,17 @@ function findBy(filter) {
   return db('plants').where(filter);
 }
 
-async function addPlant(user_id, plant) {
-  const [id] = await db('plants').insert({user_id}, ...plant, "id")
+async function addPlant(user_id, plantinfo ){
+  console.log(plantinfo);
+  const [id] = await db('plants').insert({user_id, name: plantinfo.name, description: plantinfo.description,})
   .returning("id");
+  console.log(plantinfo.name, id);
   return findById(id);
 }
 
+
 function findById(id) {
-  return db('plants')
+  return db('plants').select('id', 'name', 'description', 'user_id')
     .where({ id })
     .first();
 }

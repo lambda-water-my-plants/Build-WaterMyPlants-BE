@@ -2,9 +2,8 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('plants', tbl=>{
         tbl.increments();
-        tbl.integer(user_id).notNullable().references('id').inTable('users');
+        tbl.integer('user_id').notNullable().references('id').inTable('users');
         tbl.string('name').notNullable();
-        tbl.string('location');
         tbl.text('description');
         tbl.date('last_water');
     })

@@ -5,7 +5,7 @@ module.exports = {
   find,
   findBy,
   findById,
-  updateUser
+  updateUser, 
 };
 
 function find() {

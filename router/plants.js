@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const plantDb= require('../data/plantModel.js');
+const plantDb= require('../data/plantsModel.js');
 const {authenticate, checkForPlantOwner, validPlantId} = require('../auth/auth.js');
 
-router.get('./', async (req, res)=>{
+router.get('/', authenticate, async (req, res)=>{
     try{
         await plantDb.find()
-            .then(plant=> {
+            .then(plant => {
                 res.status(200).json(plant) })
 
     }catch (err){
@@ -32,6 +32,7 @@ router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req,
     }
 });
 
+
 router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
         const changes = req.body;
@@ -45,4 +46,6 @@ router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
         res.status(500).json({ error: `there was an error: ${err}` });
     }
 });
+
+module.exports = router;
 
