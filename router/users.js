@@ -27,14 +27,11 @@ router.post('/:id/plants', authenticate, validUserId, validUser, async (req, res
       try {
         const {id}  = req.params;
         const plant = req.body;
-        //console.log(plant);
         if (!plant.name) {
           res.status(404).json({ error: 'Please provide the name of your plant' });
         } else {
           const newPlant = await plantDb.addPlant(id, plant);
-          console.log(newPlant);
           res.status(200).json(newPlant);
-          console.log(newPlant);
         }
       } catch (err) {
         res.status(500).json({ planterror: `${err}` });

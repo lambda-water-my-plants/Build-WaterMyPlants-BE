@@ -3,6 +3,7 @@ const router = express.Router();
 const plantDb= require('../data/plantsModel.js');
 const {authenticate, checkForPlantOwner, validPlantId} = require('../auth/auth.js');
 
+//getting all the plant
 router.get('/', authenticate, async (req, res)=>{
     try{
         await plantDb.find()
@@ -13,7 +14,7 @@ router.get('/', authenticate, async (req, res)=>{
          res.status(500).json({Error: 'An uexpected error happened', err});
     }
 })
-
+//get a plant by id
 router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
         const plant = await plantDb.findById(req.params.id);
@@ -22,7 +23,7 @@ router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
         res.status(500).json({ error: `there was an error: ${err}` });
     }
 });
-
+// Delete a plant by id
 router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
         const plant = await plantDb.deletePlantById(req.params.id);
@@ -32,7 +33,7 @@ router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req,
     }
 });
 
-
+// update a plant by id
 router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
         const changes = req.body;
@@ -45,6 +46,67 @@ router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
     }catch (err){
         res.status(500).json({ error: `there was an error: ${err}` });
     }
+});
+
+// add a watering time
+// expects an array of times
+// returns the updated schedule
+router.post('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+    try {
+        const { id } = req.params;
+        const times = [...req.body.times];
+        for (let i = 0; i < times.length; i++) {
+          const wateringId = await plants.addWatering(id, times[i]);
+          const [notification] = await notifications.addNotification(wateringId);
+          notifier(notification);
+        }
+        const schedule = await plants.getWateringSchedule(id);
+        res.status(200).json(schedule);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+    
+});
+// Get a plant's watering schedule
+router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+    try {
+            const schedule = await plants.getWateringById(req.params.id);
+            if (schedule.length) {
+              res.status(200).json(schedule);
+              console.log(schedule);
+            } else {
+              res.status(400).json({error:'there is no schedule'
+              });
+            }
+    } catch (err) {
+            res.status(500).json({ error: `there was an error accessing the db: ${err}` });
+    }
+});
+
+// deletes plant's entire watering schedule
+router.delete('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+    try{
+        const response = await plants.deleteWateringById(req.params.id);
+        console.log(response);
+        res.status(200).json({ message: 'the schedule is deleted' });
+    } catch (err) {
+        res.status(500).json({ error: `there was an error deleting the schedule: ${err}` });
+    }
+});
+// delete a specific watering time
+// returns the modified watering schedule
+router.delete('/:id/schedule', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+    try {
+        const count = await plants.deleteWateringTime(req.params.waterId);
+        if (count) {
+          const schedule = await plants.getWateringSchedule(req.params.id);
+          res.status(200).json(schedule);
+        }
+      } catch (err) {
+        res.status(500).json({
+          error: `there was an error deleting the watering time: ${err}`
+        });
+      }
 });
 
 module.exports = router;

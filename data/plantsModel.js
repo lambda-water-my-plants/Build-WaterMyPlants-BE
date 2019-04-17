@@ -7,6 +7,10 @@ module.exports = {
   findById,
   deletePlantById,
   updatePlant,
+  addWatering,
+  deleteWateringTime,
+  deleteWateringbyId,
+  getWateringSchedule
 };
 
 function find() {
@@ -17,10 +21,8 @@ function findBy(filter) {
 }
 
 async function addPlant(user_id, plantinfo ){
-  console.log(plantinfo);
   const [id] = await db('plants').insert({user_id, name: plantinfo.name, description: plantinfo.description,})
   .returning("id");
-  console.log(plantinfo.name, id);
   return findById(id);
 }
 
@@ -41,3 +43,35 @@ function updatePlant(id, changes){
   .where({id})
   .update(changes)
 }
+
+async function addWatering(plant_id, watering){
+  const [id] = await db('plants').insert({plant_id, watering_time: watering.watering_time})
+  .returning("id");
+  return findById(id);
+}
+
+function getWateringSchedule(plant_id) {
+  return db('plants').select('id', 'watering_time')
+  .where({ plant_id })
+  .first();
+}
+function deleteWateringbyId(plant_id) {
+  return db('watering')
+    .where({ plant_id })
+    .delete();
+}
+function deleteWateringTime(id) {
+  return db('watering')
+    .where({ id })
+    .delete();
+}
+
+exports.notifications = {
+  // when we add watering, we get time, plant name, user name, user phone for notification
+  addNotification: wateringId =>
+    db('watering as w')
+      .join('plants as p', 'w.plant_id', 'p.id')
+      .join('users as u', 'p.user_id', 'u.id')
+      .where({ 'w.id': wateringId })
+      .select('u.username', 'p.name as plant', 'u.phone', 'w.watering_time')
+};
