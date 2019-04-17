@@ -22,6 +22,22 @@ router.get('/:id', authenticate, validUserId, validUser, async(req, res)=>{
         res.status(500).json({ error: `there was an error: ${err}` });
     }
 });
+// get all user's plants
+router.get('/:id/plants', authenticate, validUserId, validUser, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const plantList = await plantDb.findPlant(id);
+      for (let i = 0; i < plantList.length; i++) {
+        plantList[i].schedule = await plantDb.getWateringSchedule(plantList[i].id);
+      }
+      res.status(200).json(plantList);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ error: `there was an error accessing the db: ${err}` });
+    }
+  }
+);
 
 router.post('/:id/plants', authenticate, validUserId, validUser, async (req, res) => {
       try {

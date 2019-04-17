@@ -3,6 +3,7 @@ const db = require('./dbConfig.js');
 module.exports = {
   find,
   findBy,
+  findPlant,
   addPlant,
   findById,
   deletePlantById,
@@ -18,6 +19,9 @@ function find() {
 }
 function findBy(filter) {
   return db('plants').where(filter);
+}
+function findPlant(user_id) {
+  return db('plants').where({user_id});
 }
 
 async function addPlant(user_id, plantinfo ){
@@ -51,7 +55,7 @@ async function addWatering(plant_id, watering){
 }
 
 function getWateringSchedule(plant_id) {
-  return db('plants').select('id', 'watering_time')
+  return db('watering').select('id', 'watering_time')
   .where({ plant_id })
   .first();
 }
