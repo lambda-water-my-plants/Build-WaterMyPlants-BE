@@ -5,13 +5,23 @@ module.exports = {
   find,
   findBy,
   findById,
+  update,
   updateUser, 
   deleteUser,
 };
+
+function update(id, user) {
+  return db('users')
+    .where('id', Number(id))
+    .update(user);
+}
+
+
 function deleteUser(id) {
   return db('users')
     .where({ id })
-    .delete();
+    .delete()
+    
 }
 
 function find() {

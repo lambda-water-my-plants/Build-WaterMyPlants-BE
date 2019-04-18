@@ -3,7 +3,7 @@ const router = express.Router();
 const userDb= require('../data/userModel.js');
 const plantDb= require('../data/plantsModel.js');
 const {authenticate, validUser ,validUserId} = require('../auth/auth.js');
-
+const CircularJSON = require('circular-json');
 router.get('/',authenticate, async (req, res) => {
   await userDb.find()
       .then(users => {
@@ -63,5 +63,25 @@ router.post('/:id/plants', authenticate, validUserId, validUser, async (req, res
     }
   );
 
+router.put('/:id',authenticate, validUserId, validUser, async (req, res) => {
+    try {
+        const {username, password, email, phone} = req.body;
+        const {id} =req.params;
+        if (!username || !password || !email || !phone) {
+          res.status(400).json({ message: "Please provide all the required information of the user." })
+       }
+        const count = await userDb.update(id, req.body)
+        .then(user=>{
+          if (user) {
+            res.status(200).json(req.body)
+          } else {   
+            res.status(404).json({ message: "The user with the specified ID does not exist." })
+            }
+          })    
+    } catch (err) {
+      res.status(500).json({ error: `there was an error accessing the db: ${err}` });
+    }
+  }
+);
 
 module.exports = router;
