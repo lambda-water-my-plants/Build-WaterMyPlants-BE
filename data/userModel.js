@@ -2,6 +2,7 @@ const db = require('./dbConfig.js');
 
 module.exports = {
   add,
+  addUser,
   find,
   findBy,
   findById,
@@ -34,6 +35,11 @@ function findBy(filter) {
 async function add(user) {
   const [id] = await db('users').insert(user)
   .returning("id");
+  return findById(id);
+}
+async function addUser(user) {
+  const [id] = await db('users').insert(user)
+  //.returning("id");
   return findById(id);
 }
 
