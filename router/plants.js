@@ -57,19 +57,19 @@ router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, re
 // add a watering time
 // expects an array of times
 // returns the updated schedule
-router.post('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
+router.post('/:id', authenticate, validPlantId, checkForPlantOwner,(req, res)=>{
     try {    
         const { id } = req.params;
-        //const times = [...req.body.times];
-        const times = [5, 4];
+        const times = [...req.body.times];
+        console.log(times)
         for (let i = 0; i < times.length; i++) {
-          const wateringId = await plantDb.addWatering(id, times[i]);
+          const wateringId = plantDb.addWatering(id, times[i]);
           console.log(id)
-          const [notification] = await notifications.addNotification(wateringId);
+          const [notification] =  notifications.addNotification(wateringId);
           notifier(notification);
           console.log('notification',notification)
         }
-        const schedule = await plantDb.getWateringSchedule(id);
+        const schedule =  plantDb.getWateringSchedule(id);
         res.status(200).json({post: schedule});
     } catch (err) {
         res.status(500).json(err);
