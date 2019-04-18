@@ -1,7 +1,7 @@
 const { users } = require('../data/userModel.js');
 
-describe.skip('Users Model', () => {
-  describe('getUsers()', () => {
+describe('Users Model', () => {
+  describe.skip('getUsers()', () => {
     it('should return an array of objects', async () => {
       const getUsersMock = jest.spyOn(users, 'getUsers');
       const userList = getUsersMock();
@@ -11,9 +11,9 @@ describe.skip('Users Model', () => {
   });
   describe('findById', () => {
     it('should return a user with a valid id', async () => {
-      const user = await users.finfById(1);
+      const user = await users.findById(202);
       expect(user).not.toBeNull();
-      expect(user).toEqual(expect.objectContaining({ username: 'md' }));
+      expect(user).toEqual(expect.objectContaining({ username: 'md1' }));
     });
   });
 })
