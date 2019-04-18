@@ -35,19 +35,25 @@ router.delete('/:id', authenticate, validPlantId, checkForPlantOwner, async(req,
 
 // update a plant by id
 router.put('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
-    try{
-        const changes = req.body;
-        if(changes){
-            const update = await plantDb.updatePlant(req.params.id, changes);
-            res.status(200).json({message:  'Plant updated'} );
-        } else {
-            res.status(400).json({ error: 'please provide something to update' });
-        }
-    }catch (err){
-        res.status(500).json({ error: `there was an error: ${err}` });
+    try {
+        const {name, description, last_water, schedule} = req.body;
+        const {id} =req.params;
+        if (!name ) {
+          res.status(400).json({ message: "Please provide all the required information of the plant." })
+       }
+        const count = await plantDb.updatePlant(id, req.body)
+        .then(user=>{
+          if (user) {
+            res.status(200).json(req.body)
+          } else {   
+            res.status(404).json({ message: "The plant with the specified ID does not exist." })
+            }
+          })    
+    } catch (err) {
+      res.status(500).json({ error: `there was an error accessing the db: ${err}` });
     }
-});
-
+  }
+);
 // add a watering time
 // expects an array of times
 // returns the updated schedule

@@ -3,7 +3,7 @@ const router = express.Router();
 const userDb= require('../data/userModel.js');
 const plantDb= require('../data/plantsModel.js');
 const {authenticate, validUser ,validUserId} = require('../auth/auth.js');
-const CircularJSON = require('circular-json');
+
 router.get('/',authenticate, async (req, res) => {
   await userDb.find()
       .then(users => {
@@ -14,11 +14,11 @@ router.get('/',authenticate, async (req, res) => {
       })
 });
 
-router.delete('/:id',(req, res) => {
+router.delete('/:id', authenticate, validUserId, validUser, (req, res) => {
   const id =req.params.id;
   userDb.deleteUser(id)
   .then( confirm => {
-    res.status(200).json({message: `This ${confirm} id deleted` })
+    res.status(200).json({message: `${confirm} id deleted` })
    })
 })
 
@@ -67,7 +67,7 @@ router.put('/:id',authenticate, validUserId, validUser, async (req, res) => {
     try {
         const {username, password, email, phone} = req.body;
         const {id} =req.params;
-        if (!username || !password || !email || !phone) {
+        if (!username) {
           res.status(400).json({ message: "Please provide all the required information of the user." })
        }
         const count = await userDb.update(id, req.body)
