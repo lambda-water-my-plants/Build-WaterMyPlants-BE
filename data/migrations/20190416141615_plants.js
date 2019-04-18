@@ -7,7 +7,6 @@ exports.up = function(knex, Promise) {
         tbl.text('description');
         tbl.date('last_water');
     })
-  
 };
 
 exports.down = function(knex, Promise) {

@@ -6,7 +6,13 @@ module.exports = {
   findBy,
   findById,
   updateUser, 
+  deleteUser,
 };
+function deleteUser(id) {
+  return db('users')
+    .where({ id })
+    .delete();
+}
 
 function find() {
   return db('users').select('id', 'username');
