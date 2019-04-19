@@ -10,6 +10,7 @@ const seeds = [
 ];
 exports.seed = function(knex, Promise) {
     return knex('plants')
+    //.truncate()
     .then(function(){
       return knex('users').insert([...seeds]);
     })
