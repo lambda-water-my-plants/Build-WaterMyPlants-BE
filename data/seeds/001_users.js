@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const pw = bcrypt.hashSync('pass');
 const seeds = [
-  { id: 200,
+  { id: 1,
     username: 'md',
     email: 'kki@gmail',
     password: pw,

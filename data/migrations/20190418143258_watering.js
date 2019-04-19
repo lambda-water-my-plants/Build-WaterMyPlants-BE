@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('watering', tbl => {
-      tbl.increments();
+      tbl.increments('id');
       tbl.integer('plant_id').references('id').inTable('plants').onDelete('CASCADE');
       tbl.datetime('watering_time');
     });
