@@ -16,7 +16,7 @@ function authenticate(req, res, next) {
     jwt.verify(token, secret, (err, decoded) => {
       if (err) return res.status(401).json({error: err});
       req.decoded = decoded;
-      console.log(decoded)
+      console.log("sign info", decoded)
       next();
     });
   } else {
@@ -68,16 +68,14 @@ async function validUserId(req, res, next){
 async function checkForPlantOwner(req, res, next){
   const {id} = req.params;
   const plant = await plantsDb.findById(id);
-  const {userId} = req.decoded.subject;
+  const userId = req.decoded.subject;
 
   if (!plant) {
     res.status(400).json({ error: 'there is no plant with that id' });
     return;
   }
-  if (plant.user_id !== userId) {
-    res
-      .status(403)
-      .json({ message: "you cannot access another user's plant" });
+  if (plant.user_id !== userId) {  
+    res.status(403).json({ message: "you cannot access another user's plant" });
   } else {
     next();
   }

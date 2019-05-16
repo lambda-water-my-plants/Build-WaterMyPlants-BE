@@ -6,7 +6,6 @@ const login    = require('../router/login.js');
 const register = require('../router/register.js');
 const users    = require('../router/users.js');
 const plants   = require('../router/plants.js');
-//const { authenticate, generateToken } = require('../auth/auth.js');
 
 server.use(express.json());
 server.use(helmet());
