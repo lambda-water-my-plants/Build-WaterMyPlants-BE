@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const plantDb= require('../data/plantsModel.js');
-const {authenticate, checkForPlantOwner, validPlantId} = require('../auth/auth.js');
+const {validUser ,validUserId, authenticate, checkForPlantOwner, validPlantId} = require('../auth/auth.js');
 
 //getting all the plant
 router.get('/', authenticate, async (req, res)=>{
@@ -14,6 +14,38 @@ router.get('/', authenticate, async (req, res)=>{
          res.status(500).json({Error: 'An uexpected error happened', err});
     }
 })
+// create a plant
+router.post('/:id/plant', authenticate, validUserId, validUser, async (req, res) => {
+  try { 
+    const {id}  = req.params;
+    const plant = req.body;
+    if (!plant.name) {
+      res.status(404).json({ error: 'Please provide the name of your plant' });
+    } else {
+      const newPlant = await plantDb.addPlant(id, plant);
+      res.status(200).json(newPlant);
+    }
+  } catch (err) {
+    res.status(500).json({ planterror: `${err}` });
+  }
+}
+);
+// get a user's  all plants
+router.get('/:id/plants', authenticate, validUserId, validUser, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const plantList = await plantDb.findPlant(id);
+    for (let i = 0; i < plantList.length; i++) {
+      plantList[i].schedule = await plantDb.getWateringSchedule(plantList[i].id);
+    }
+    res.status(200).json(plantList);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: `there was an error accessing the db: ${err}` });
+  }
+}
+);
 //get a plant by id
 router.get('/:id', authenticate, validPlantId, checkForPlantOwner, async(req, res)=>{
     try{
