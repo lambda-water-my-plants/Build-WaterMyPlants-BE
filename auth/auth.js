@@ -16,7 +16,6 @@ function authenticate(req, res, next) {
     jwt.verify(token, secret, (err, decoded) => {
       if (err) return res.status(401).json({error: err});
       req.decoded = decoded;
-      console.log("sign info", decoded)
       next();
     });
   } else {
@@ -43,7 +42,7 @@ async function validUser(req, res, next){
     const userId = req.decoded.subject;
     const urlId = parseInt(req.params.id);
     if(userId !== urlId){
-      res.status(403).json({error: 'You are not authorized ', userId, urlId})
+      res.status(403).json({error: 'You are not authorized '})
     } else{ 
       next();
     }
